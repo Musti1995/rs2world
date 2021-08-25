@@ -1,4 +1,4 @@
-package be.nfm.rs2.client;
+package be.nfm.rs2.server.client;
 
 import java.nio.ByteBuffer;
 import java.util.concurrent.ConcurrentLinkedQueue;

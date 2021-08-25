@@ -1,15 +1,13 @@
 package be.nfm.rs2.server;
 
-import be.nfm.rs2.client.Client;
-import be.nfm.rs2.client.ClientPool;
+import be.nfm.rs2.server.client.Client;
+import be.nfm.rs2.server.client.ClientPool;
 import be.nfm.rs2.util.ArrayWrapper;
-import be.nfm.rs2.util.Timer;
 
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
-import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
