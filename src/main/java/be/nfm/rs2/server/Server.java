@@ -3,6 +3,7 @@ package be.nfm.rs2.server;
 import be.nfm.rs2.client.Client;
 import be.nfm.rs2.client.ClientPool;
 import be.nfm.rs2.server.events.ServerEventContainer;
+import be.nfm.rs2.util.ArrayWrapper;
 import be.nfm.rs2.util.Timer;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -35,6 +36,8 @@ public final class Server implements Runnable {
     private final int acceptBatch;
     private final ServerContext ctx;
     private final ThreadLocal<ByteBuffer> localBuffer;
+    private final ArrayWrapper<Client> activeClients;
+    private final ArrayWrapper<Client> loginQueue;
 
     public Server(@Value("port") int port,
                   @Value("host") String host,
@@ -42,22 +45,27 @@ public final class Server implements Runnable {
                   @Value("accept-batch") int acceptBatch,
                   @Value("workers") int workers,
                   @Value("buffer-size") int bufferSize,
-                  ClientPool clientPool) throws IOException {
+                  @Value("clients.buffer-size") int clientBufferSize,
+                  @Value("clients.capacity") int capacity,
+                  @Value("clients.login-queue-capacity") int loginQueueCapacity) throws IOException {
         clientMap = new ConcurrentHashMap<>();
         acceptTimer = new Timer(System::currentTimeMillis);
         this.acceptDelay = acceptDelay;
         this.acceptBatch = acceptBatch;
-        this.clientPool = clientPool;
+        this.clientPool = new ClientPool(capacity + loginQueueCapacity, clientBufferSize);
         executorService = Executors.newFixedThreadPool(workers);
 
         selector = Selector.open();
         serverSocketChannel = ServerSocketChannel.open();
 
+        serverSocketChannel.configureBlocking(false);
         serverSocketChannel.socket().bind(new InetSocketAddress(host, port));
         serverSocketChannel.register(selector, SelectionKey.OP_ACCEPT);
-        serverSocketChannel.configureBlocking(false);
 
         localBuffer = ThreadLocal.withInitial(() -> ByteBuffer.allocate(bufferSize));
+
+        activeClients = ArrayWrapper.wrap(new Client[capacity]);
+        loginQueue = ArrayWrapper.wrap(new Client[loginQueueCapacity]);
 
         ctx = new ServerContext(serverSocketChannel,
                 selector,
@@ -65,7 +73,9 @@ public final class Server implements Runnable {
                 executorService,
                 acceptBatch,
                 localBuffer,
-                clientMap);
+                clientMap,
+                activeClients,
+                loginQueue);
     }
 
     @Override
@@ -87,25 +97,8 @@ public final class Server implements Runnable {
         }
     }
 
-    private void accept() {
-        acceptTimer.reset();
-        try {
-            for (int i = 0; i < acceptBatch; i++) {
-                SocketChannel channel = serverSocketChannel.accept();
-                if (channel == null) return;
-                channel.configureBlocking(false);
-
-                Client client = clientPool.request();
-                if (client == null) {
-                    channel.write(ServerResponse.PREMADE_WORLD_FULL);
-                    channel.close();
-                    return;
-                }
-
-                SelectionKey key = channel.register(selector, SelectionKey.OP_READ);
-            }
-        } catch(IOException ioe) {
-            ioe.printStackTrace();
-        }
+    public ServerContext context() {
+        return ctx;
     }
+
 }
