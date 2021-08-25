@@ -2,6 +2,7 @@ package be.nfm.rs2.server;
 
 import be.nfm.rs2.client.Client;
 import be.nfm.rs2.client.ClientPool;
+import be.nfm.rs2.util.ArrayWrapper;
 import be.nfm.rs2.util.Timer;
 
 import java.nio.ByteBuffer;
@@ -21,6 +22,8 @@ public final class ServerContext {
     private final int acceptBatch;
     private final ThreadLocal<ByteBuffer> localBuffer;
     private final ConcurrentHashMap<SelectionKey, Client> clientMap;
+    private final ArrayWrapper<Client> activeClients;
+    private final ArrayWrapper<Client> loginQueue;
 
     public ServerContext(ServerSocketChannel channel,
                          Selector selector,
@@ -28,7 +31,9 @@ public final class ServerContext {
                          ExecutorService executor,
                          int acceptBatch,
                          ThreadLocal<ByteBuffer> localBuffer,
-                         ConcurrentHashMap<SelectionKey, Client> clientMap) {
+                         ConcurrentHashMap<SelectionKey, Client> clientMap,
+                         ArrayWrapper<Client> activeClients,
+                         ArrayWrapper<Client> loginQueue) {
         this.channel = channel;
         this.selector = selector;
         this.clientPool = clientPool;
@@ -36,6 +41,8 @@ public final class ServerContext {
         this.acceptBatch = acceptBatch;
         this.localBuffer = localBuffer;
         this.clientMap = clientMap;
+        this.activeClients = activeClients;
+        this.loginQueue = loginQueue;
     }
 
     public ServerSocketChannel channel() {
@@ -64,5 +71,13 @@ public final class ServerContext {
 
     public ConcurrentHashMap<SelectionKey, Client> clientMap() {
         return clientMap;
+    }
+
+    public ArrayWrapper<Client> activeClients() {
+        return activeClients;
+    }
+
+    public ArrayWrapper<Client> loginQueue() {
+        return loginQueue;
     }
 }
