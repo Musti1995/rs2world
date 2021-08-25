@@ -14,6 +14,18 @@ public class Client {
         this.clientPool = clientPool;
     }
 
+    public void cleanAndReturn() {
+        outBuffer.clear();
+        selectionKey = null;
+        clientPool.reclaim(this);
+    }
 
+    public void assignKey(SelectionKey key) {
+        this.selectionKey = key;
+    }
+
+    public SelectionKey selectionKey() {
+        return selectionKey;
+    }
 
 }

@@ -30,6 +30,7 @@ public class ServerEventAccept implements ServerEvent {
                 }
 
                 SelectionKey newKey = channel.register(ctx.selector(), SelectionKey.OP_READ);
+                client.assignKey(newKey);
                 ctx.clientMap().put(newKey, client);
             }
         } catch(IOException ioe) {
