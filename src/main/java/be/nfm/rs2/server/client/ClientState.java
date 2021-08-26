@@ -6,8 +6,9 @@ package be.nfm.rs2.server.client;
 public enum ClientState {
 
     CONNECTING,
-    CONNECTED,
     LOGGING_IN,
-    LOGGED_IN
+    AWAITING_PLACEMENT,
+    LOGGED_IN,
+    AWAITING_CLEANUP
 
 }

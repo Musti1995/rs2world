@@ -8,6 +8,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
+import java.security.SecureRandom;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
 
@@ -22,6 +23,7 @@ public final class ServerContext {
     private final ConcurrentHashMap<SelectionKey, Client> clientMap;
     private final ArrayWrapper<Client> activeClients;
     private final ArrayWrapper<Client> loginQueue;
+    private final SecureRandom randomGenerator;
 
     public ServerContext(ServerSocketChannel channel,
                          Selector selector,
@@ -31,7 +33,8 @@ public final class ServerContext {
                          ThreadLocal<ByteBuffer> localBuffer,
                          ConcurrentHashMap<SelectionKey, Client> clientMap,
                          ArrayWrapper<Client> activeClients,
-                         ArrayWrapper<Client> loginQueue) {
+                         ArrayWrapper<Client> loginQueue,
+                         SecureRandom randomGenerator) {
         this.channel = channel;
         this.selector = selector;
         this.clientPool = clientPool;
@@ -41,6 +44,7 @@ public final class ServerContext {
         this.clientMap = clientMap;
         this.activeClients = activeClients;
         this.loginQueue = loginQueue;
+        this.randomGenerator = randomGenerator;
     }
 
     public ServerSocketChannel channel() {
@@ -77,5 +81,9 @@ public final class ServerContext {
 
     public ArrayWrapper<Client> loginQueue() {
         return loginQueue;
+    }
+
+    public SecureRandom randomGenerator() {
+        return randomGenerator;
     }
 }

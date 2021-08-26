@@ -5,6 +5,8 @@ import be.nfm.rs2.server.ServerContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import java.security.SecureRandom;
+
 /**
  * @author Musa Kapan
  */
@@ -17,4 +19,8 @@ public class BeanConfig {
         return server.context();
     }
 
+    @Bean
+    public SecureRandom rng() {
+        return new SecureRandom();
+    }
 }

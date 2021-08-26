@@ -40,7 +40,7 @@ public class ServerEventAccept implements ServerEvent {
                 }
 
                 SelectionKey newKey = channel.register(ctx.selector(), SelectionKey.OP_READ);
-                client.assignKey(newKey);
+                client.initialize(newKey);
                 ctx.clientMap().put(newKey, client);
                 buffer.put((byte) ServerResponse.CONNECTED);
                 buffer.flip();

@@ -20,8 +20,8 @@ public class Timer {
         return timeSupplier.get() - lastRefresh;
     }
 
-    public Bool elapsed(long time) {
-        return Bool.of(elapsed() >= time);
+    public boolean elapsed(long time) {
+        return elapsed() >= time;
     }
 
 }

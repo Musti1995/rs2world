@@ -15,6 +15,7 @@ import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
 import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
+import java.security.SecureRandom;
 import java.util.Iterator;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutorService;
@@ -36,7 +37,8 @@ public final class Server implements Runnable {
                   @Value("buffer-size") int bufferSize,
                   @Value("clients.buffer-size") int clientBufferSize,
                   @Value("clients.capacity") int capacity,
-                  @Value("clients.login-queue-capacity") int loginQueueCapacity) throws IOException {
+                  @Value("clients.login-queue-capacity") int loginQueueCapacity,
+                  SecureRandom rng) throws IOException {
         ConcurrentHashMap<SelectionKey, Client> clientMap = new ConcurrentHashMap<>();
         acceptTimer = new Timer(System::currentTimeMillis);
         this.acceptDelay = acceptDelay;
@@ -63,7 +65,8 @@ public final class Server implements Runnable {
                 localBuffer,
                 clientMap,
                 activeClients,
-                loginQueue);
+                loginQueue,
+                rng);
     }
 
     @Override
@@ -73,7 +76,7 @@ public final class Server implements Runnable {
             Iterator<SelectionKey> keys = ctx.selector().selectedKeys().iterator();
             while (keys.hasNext()) {
                 SelectionKey key = keys.next();
-                if (key.isAcceptable() && acceptTimer.elapsed(acceptDelay).value()) {
+                if (key.isAcceptable() && acceptTimer.elapsed(acceptDelay)) {
                     acceptTimer.reset();
                     ctx.executor().submit(ServerEventContainer.newAcceptEvent(ctx));
                 }
