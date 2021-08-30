@@ -1,8 +1,9 @@
 package be.nfm.rs2.server.events;
 
-import be.nfm.rs2.client.Client;
+import be.nfm.rs2.server.client.Client;
 import be.nfm.rs2.server.ServerContext;
 import be.nfm.rs2.server.ServerResponse;
+import be.nfm.rs2.server.client.ClientState;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -39,11 +40,12 @@ public class ServerEventAccept implements ServerEvent {
                 }
 
                 SelectionKey newKey = channel.register(ctx.selector(), SelectionKey.OP_READ);
-                client.assignKey(newKey);
+                client.initialize(newKey);
                 ctx.clientMap().put(newKey, client);
                 buffer.put((byte) ServerResponse.CONNECTED);
                 buffer.flip();
                 channel.write(buffer);
+                client.setState(ClientState.CONNECTING);
             }
         } catch(IOException ioe) {
             ioe.printStackTrace();

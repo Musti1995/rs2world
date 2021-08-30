@@ -1,6 +1,8 @@
 package be.nfm.rs2.engine;
 
 import be.nfm.rs2.server.ServerContext;
+import be.nfm.rs2.server.client.Client;
+import be.nfm.rs2.util.ArrayWrapper;
 import be.nfm.rs2.util.Bool;
 import be.nfm.rs2.util.Timer;
 import org.springframework.stereotype.Component;
@@ -13,12 +15,10 @@ public final class Engine implements Runnable {
 
     private long currentTick;
     private final HashMap<Long, LinkedList<EventContainer>> eventMap;
-    private final ServerContext ctx;
 
-    public Engine(ServerContext ctx) {
+    public Engine() {
         this.eventMap = new HashMap<>();
         this.currentTick = 0;
-        this.ctx = ctx;
     }
 
     @Override

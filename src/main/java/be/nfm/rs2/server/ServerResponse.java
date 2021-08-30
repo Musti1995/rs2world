@@ -26,10 +26,4 @@ public class ServerResponse {
     public static final int INVALID_LOGIN_SERVER = 20;
     public static final int JUST_LEFT_OTHER_WORLD = 21;
 
-    public static final ByteBuffer PREMADE_WAIT_TRY_AGAIN_COUNT =
-            ByteBuffer.allocate(1).put((byte) WAIT_TRY_AGAIN_COUNT).flip();
-
-    public static final ByteBuffer PREMADE_WORLD_FULL =
-            ByteBuffer.allocate(1).put((byte) WORLD_FULL).flip();
-
 }
