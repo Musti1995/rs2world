@@ -1,4 +1,4 @@
-package be.nfm.rs2.server.client;
+package be.nfm.rs2.client;
 
 /**
  * @author Musa Kapan

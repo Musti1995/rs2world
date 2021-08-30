@@ -1,7 +1,8 @@
 package be.nfm.rs2.config;
 
-import be.nfm.rs2.server.Server;
-import be.nfm.rs2.server.ServerContext;
+import be.nfm.rs2.client.Client;
+import be.nfm.rs2.util.ArrayWrapper;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -15,12 +16,17 @@ import java.security.SecureRandom;
 public class BeanConfig {
 
     @Bean
-    public ServerContext context(Server server) {
-        return server.context();
+    public SecureRandom rng() {
+        return new SecureRandom();
     }
 
     @Bean
-    public SecureRandom rng() {
-        return new SecureRandom();
+    public ArrayWrapper<Client> loginQueue(@Value("${${rs2.client.login-queue-capacity}}") int capacity) {
+        return ArrayWrapper.wrap(new Client[capacity]);
+    }
+
+    @Bean
+    public ArrayWrapper<Client> activeClients(@Value("${${rs2.client.capacity}}") int capacity) {
+        return ArrayWrapper.wrap(new Client[capacity]);
     }
 }

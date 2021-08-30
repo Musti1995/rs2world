@@ -103,16 +103,30 @@ public final class Bool {
         return this;
     }
 
-    public <X extends Throwable> Bool throwIfTrue(Supplier<? extends X> exceptionSupplier) throws X {
+    public <X extends RuntimeException> Bool throwIfTrue(Supplier<? extends X> exceptionSupplier) throws X {
         Objects.requireNonNull(exceptionSupplier);
         if (value) throw exceptionSupplier.get();
         return this;
     }
 
-    public <X extends Throwable> Bool throwIfFalse(Supplier<? extends X> exceptionSupplier) throws X {
+    public <X extends RuntimeException> Bool throwIfFalse(Supplier<? extends X> exceptionSupplier) throws X {
         Objects.requireNonNull(exceptionSupplier);
         if (!value) throw exceptionSupplier.get();
         return this;
+    }
+
+    public static <X extends RuntimeException> Bool throwIfFalse(boolean b,
+                                                          Supplier<? extends X> exceptionSupplier) {
+        Objects.requireNonNull(exceptionSupplier);
+        if (!b) throw exceptionSupplier.get();
+        return of(b);
+    }
+
+    public static <X extends RuntimeException> Bool throwIfTrue(boolean b,
+                                                          Supplier<? extends X> exceptionSupplier) {
+        Objects.requireNonNull(exceptionSupplier);
+        if (b) throw exceptionSupplier.get();
+        return of(b);
     }
 
     public <X> X returnMatrix(Supplier<X> supplyOnTrue, Supplier<X> supplyOnFalse) {

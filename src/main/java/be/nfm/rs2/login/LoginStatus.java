@@ -1,8 +1,6 @@
-package be.nfm.rs2.server;
+package be.nfm.rs2.login;
 
-import java.nio.ByteBuffer;
-
-public class ServerResponse {
+public class LoginStatus {
 
     public static final int WAIT_TRY_AGAIN_COUNT = -1;
     public static final int CONNECTED = 0;
