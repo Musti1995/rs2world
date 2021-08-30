@@ -45,7 +45,7 @@ public class ServerEventAccept implements ServerEvent {
                 buffer.put((byte) ServerResponse.CONNECTED);
                 buffer.flip();
                 channel.write(buffer);
-                client.setState(ClientState.CONNECTED);
+                client.setState(ClientState.CONNECTING);
             }
         } catch(IOException ioe) {
             ioe.printStackTrace();
