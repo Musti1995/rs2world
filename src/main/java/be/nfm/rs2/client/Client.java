@@ -13,31 +13,26 @@ public class Client {
     private static final long TIMEOUT_DELAY = 10000;
 
     private final Timer timeoutTimer;
-    private final ConcurrentLinkedQueue<ClientEvent> packetQueue;
     private final ByteBuffer outBuffer;
+    private final ByteBuffer inBuffer;
     private final ClientPool clientPool;
     private SelectionKey selectionKey;
     private ClientState state;
 
-    protected Client(ByteBuffer outBuffer, ClientPool clientPool) {
+    protected Client(ByteBuffer outBuffer, ByteBuffer inBuffer, ClientPool clientPool) {
         this.timeoutTimer = new Timer(System::currentTimeMillis);
-        this.packetQueue = new ConcurrentLinkedQueue<>();
         this.outBuffer = outBuffer;
+        this.inBuffer = inBuffer;
         this.clientPool = clientPool;
         this.state = ClientState.CONNECTING;
     }
 
     public void cleanAndReturn() {
         outBuffer.clear();
+        inBuffer.clear();
         selectionKey = null;
         state = ClientState.CONNECTING;
-        packetQueue.clear();
         clientPool.reclaim(this);
-    }
-
-    public void queuePacket(ClientEvent packet) {
-        packetQueue.add(packet);
-        timeoutTimer.reset();
     }
 
     public void initialize(SelectionKey key) {
@@ -65,6 +60,10 @@ public class Client {
         return outBuffer;
     }
 
+    public ByteBuffer inBuffer() {
+        return inBuffer;
+    }
+
     public void flushOutBuffer() {
         if (outBuffer.position() == 0) return;
         try {
@@ -74,6 +73,13 @@ public class Client {
             outBuffer.clear();
         } catch(IOException ignored) {
 
+        }
+    }
+
+    public void readIncomingPackets() throws IOException {
+        synchronized (inBuffer) {
+            SocketChannel channel = (SocketChannel) selectionKey.channel();
+            channel.read(inBuffer);
         }
     }
 }

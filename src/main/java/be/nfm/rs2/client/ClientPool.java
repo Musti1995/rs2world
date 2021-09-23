@@ -22,7 +22,7 @@ public class ClientPool {
     }
 
     private Client create() {
-        return new Client(ByteBuffer.allocate(clientBufferSize), this);
+        return new Client(ByteBuffer.allocate(clientBufferSize), ByteBuffer.allocate(clientBufferSize), this);
     }
 
     public Client request() {

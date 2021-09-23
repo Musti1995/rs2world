@@ -21,11 +21,6 @@ public class BeanConfig {
     }
 
     @Bean
-    public ArrayWrapper<Client> loginQueue(@Value("${${rs2.client.login-queue-capacity}}") int capacity) {
-        return ArrayWrapper.wrap(new Client[capacity]);
-    }
-
-    @Bean
     public ArrayWrapper<Client> activeClients(@Value("${${rs2.client.capacity}}") int capacity) {
         return ArrayWrapper.wrap(new Client[capacity]);
     }
